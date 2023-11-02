@@ -1,13 +1,14 @@
 package Clases;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Fernando Ortega Castro
  */
-public class Jugador {
+public class Jugador implements Serializable {
     
     /********************************
      ********   Atributos   *********
@@ -85,8 +86,8 @@ public class Jugador {
         this.nivel = nivel;
     }
     
-    public void setJugadoresActuales(int n) {
-        this.JugadoresActuales = n;
+    public static void setJugadoresActuales(int n) {
+        Jugador.JugadoresActuales = n;
     }
     
     public void setInventarioConAcceso (InventarioCompartido i){

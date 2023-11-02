@@ -1,38 +1,19 @@
 package Controller;
+
 import Clases.InventarioCompartido;
 import Clases.Jugador;
 import Clases.Partida;
 import Clases.Servidor;
-import java.util.ArrayList;
 
-/// xml
-
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Result;
-
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-import org.w3c.dom.Document;
-
-///
 
 /**
  *
@@ -48,7 +29,7 @@ public class Controller {
     private ArrayList<ArrayList<String>> arrayAuxiliarDeArraysCarga; // Para la carrga de inventarios (parcial)
     
      /**
-     * @brief Constructor del controlador con la lectura inicial del xml
+     * @brief Constructor del controlador con la lectura inicial del serializable
      */
     public Controller () {
             servidores_sistema = new ArrayList<Servidor>();
@@ -58,17 +39,25 @@ public class Controller {
             
             arrayAuxiliarDeArraysCarga = new ArrayList<ArrayList<String>>();
             
-            this.leerXML_inventario();
-            this.leerXML_jugador();
-            this.leerXML_servidor();
-            this.leerXML_partida();
-            this.enlazarInventarioJugador();
+            //Carga inicial
+            this.leerSerializable_inventario();
+            this.leerSerializable_jugador();
+            this.leerSerializable_servidor();
+            this.leerSerializable_partida();
+            
+            //Actualizacion de variables de generacion de id
+            Servidor.setServidoresActuales(Integer.parseInt((servidores_sistema.get(servidores_sistema.size()-1).getIdServer().substring(2))));
+            InventarioCompartido.setInventariosActuales(Integer.parseInt((inventarios_sistema.get(inventarios_sistema.size()-1).getIdInventario().substring(2))));
+            Jugador.setJugadoresActuales(Integer.parseInt((jugadores_sistema.get(jugadores_sistema.size()-1).getIdPlayer().substring(2))));
+            Partida.setPartidasActuales(Integer.parseInt((partidas_sistema.get(partidas_sistema.size()-1).getIdPartida().substring(2))));
+
+            
     }
     
     /*////////////////////////////////////////////////////////
     ///////////////////      Servidor      //////////////////
     //////////////////////////////////////////////////////*/
-     
+    
     /**
      * @brief Crear un servidor por medio de sus atributos previamente obtenidos
      * @pre se obtendran y filtraran los datos en la interfaz
@@ -77,7 +66,7 @@ public class Controller {
      */
     public void crearServidor (String region){
         servidores_sistema.add (new Servidor (region));
-        this.escribirXML_servidor();
+        this.escribirSerializable_servidor();
     }
     
     /**
@@ -92,7 +81,7 @@ public class Controller {
         for (i=0; i<servidores_sistema.size() && !servidores_sistema.get(i).getIdServer().equals(Id); i++){
         }
         servidores_sistema.get(i).setRegion(region);
-        this.escribirXML_servidor();
+        this.escribirSerializable_servidor();
     }
     
     /**
@@ -106,7 +95,7 @@ public class Controller {
         for (i=0; i<servidores_sistema.size() && !servidores_sistema.get(i).getIdServer().equals(Id); i++){
         }
         servidores_sistema.remove(i);
-        this.escribirXML_servidor();
+        this.escribirSerializable_servidor();
     }
     
     public ArrayList<Servidor> getServidores_sistema() {
@@ -139,8 +128,8 @@ public class Controller {
         inventarios_sistema.add (inv);
         
         
-        this.escribirXML_inventario();
-        this.escribirXML_jugador();
+        this.escribirSerializable_inventario();
+        this.escribirSerializable_jugador();
     }
     
     /**
@@ -180,8 +169,8 @@ public class Controller {
             }
         }
         
-        this.escribirXML_inventario();
-        this.escribirXML_jugador();
+        this.escribirSerializable_inventario();
+        this.escribirSerializable_jugador();
 
 
     }
@@ -197,7 +186,7 @@ public class Controller {
         for (i=0; i<inventarios_sistema.size() && !inventarios_sistema.get(i).getIdInventario().equals(Id); i++){
         }
         inventarios_sistema.remove(i);
-        this.escribirXML_inventario();
+        this.escribirSerializable_inventario();
     }
     
     public ArrayList<InventarioCompartido> getInventarios_sistema() {
@@ -244,7 +233,7 @@ public class Controller {
 
         partidas_sistema.add (p);
         
-        this.escribirXML_partida();
+        this.escribirSerializable_partida();
     }
     
     /**
@@ -270,7 +259,7 @@ public class Controller {
             }
         }
 
-        this.escribirXML_partida();
+        this.escribirSerializable_partida();
     }
     
     /**
@@ -284,7 +273,7 @@ public class Controller {
         for (i=0; i<partidas_sistema.size() && !partidas_sistema.get(i).getIdPartida().equals(Id); i++){
         }
         partidas_sistema.remove(i);
-        this.escribirXML_partida();
+        this.escribirSerializable_partida();
     }
     
     public ArrayList<Partida> getPartidas_sistema() {
@@ -414,8 +403,8 @@ public class Controller {
 
         jugadores_sistema.add (j);
         
-        this.escribirXML_jugador();
-        this.escribirXML_inventario();
+        this.escribirSerializable_jugador();
+        this.escribirSerializable_inventario();
     }
     
     /**
@@ -452,8 +441,8 @@ public class Controller {
             }
         }
         
-        this.escribirXML_jugador();
-        this.escribirXML_inventario();
+        this.escribirSerializable_jugador();
+        this.escribirSerializable_inventario();
     }
     
     /**
@@ -474,8 +463,8 @@ public class Controller {
         
         jugadores_sistema.remove(i);
         
-        this.escribirXML_jugador();
-        this.escribirXML_inventario();
+        this.escribirSerializable_jugador();
+        this.escribirSerializable_inventario();
     }
     
     public ArrayList<Jugador> getJugadores_sistema() {
@@ -513,545 +502,210 @@ public class Controller {
     }
 
     /*////////////////////////////////////////////////////////
-    ///////////////////    xml_Servidor    //////////////////
+    //////////////    Serializable_Servidor    //////////////
     //////////////////////////////////////////////////////*/
 
      /**
-     * @brief escribir el xml de los servidores
-     * @post se escribira la instancia actual de los servidores del controlador en un archivo xml
+     * @brief escribir el serializable de los servidores
+     * @post se escribira la instancia actual de los servidores del controlador en un archivo .data
      */
-    public void escribirXML_servidor(){
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            // Crear estructura del documento
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            DOMImplementation dom = builder.getDOMImplementation();
-            documento = dom.createDocument(null, "xml", null);
-
-            // Crear elemento raiz
-            Element raiz = documento.createElement("Servidores");
-            documento.getDocumentElement().appendChild(raiz);
-            
-            // Crear nodos para cada producto y colgarlos del arbol
-            Element nodoServidor = null;
-            Element nodoDatos = null;
-            Text texto = null;
-
-            for (Servidor serv : servidores_sistema){
-                nodoServidor = documento.createElement("Servidor");
-                raiz.appendChild(nodoServidor);
-
-                nodoDatos = documento.createElement("IdServidor");
-                nodoServidor.appendChild(nodoDatos);
-                texto = documento.createTextNode(serv.getIdServer());
-                nodoDatos.appendChild(texto);
-
-                nodoDatos = documento.createElement("Region");
-                nodoServidor.appendChild(nodoDatos);
-                texto = documento.createTextNode(serv.getRegion());
-                nodoDatos.appendChild(texto);
+    public void escribirSerializable_servidor(){
+        ObjectOutputStream serializador = null;
+        try {
+            serializador = new ObjectOutputStream(new FileOutputStream("servidores.dat"));
+            serializador.writeObject(servidores_sistema);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (serializador != null)
+            try {
+                serializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
-
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            
-            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            
-            Source source = new DOMSource(documento);
-            Result resultado = new StreamResult(new File("servidores_sistema.xml"));
-            
-            transformer.transform(source, resultado);
-            
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(TransformerConfigurationException tce){
-            tce.printStackTrace();
-        }
-        catch(TransformerException te){
-            te.printStackTrace();
         }
     }
     
      /**
-     * @brief leer el xml de los servidores y guardarlo en la instancia del controlador
-     * @post leera un archivo xml y guardaran sus datos
+     * @brief leer el serializable de los servidores y guardarlo en la instancia del controlador
+     * @post leera un archivo .data y guardaran sus datos
      */
-    public void leerXML_servidor(){
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            File f = new File("servidores_sistema.xml");
-            if (!f.exists() || f.length() == 0){
-                //No lo podemos leero o no existe o esta vacio
-            }
-            else {
-
-                documento = builder.parse(f);
-
-                // Recorrer el arbol
-                NodeList servidores = documento.getElementsByTagName("Servidor");
-
-                for(int i = 0; i < servidores.getLength(); i++){
-                    Node servidor = servidores.item(i);
-                    Element elemento = (Element) servidor;
-
-                    servidores_sistema.add(new Servidor (elemento.getElementsByTagName("IdServidor").item(0).getChildNodes().item(0).getNodeValue(), elemento.getElementsByTagName("Region").item(0).getChildNodes().item(0).getNodeValue()));
-                }
-
-            }
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(IOException ioe){
-            ioe.printStackTrace();
-        }
-        catch(SAXException saxe){
-            saxe.printStackTrace();
-        }
-    }
-
-    /*////////////////////////////////////////////////////////
-    //////////////////    xml_Inventario    /////////////////
-    //////////////////////////////////////////////////////*/
-
-     /**
-     * @brief escribir el xml de los inventarios
-     * @post se escribira la instancia actual de los inventarios del controlador en un archivo xml
-     */
-    public void escribirXML_inventario(){
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            // Crear estructura del documento
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            DOMImplementation dom = builder.getDOMImplementation();
-            documento = dom.createDocument(null, "xml", null);
-
-            // Crear elemento raiz
-            Element raiz = documento.createElement("Inventarios");
-            documento.getDocumentElement().appendChild(raiz);
-            
-            // Crear nodos para cada producto y colgarlos del arbol
-            Element nodoInventario = null;
-            Element nodoDatos = null;
-            Text texto = null;
-
-            
-            Element nodoJugador = null;
-            Element nodoJugadores = null;
-
-            
-            for (InventarioCompartido inv : inventarios_sistema){
-                nodoInventario = documento.createElement("Inventario");
-                raiz.appendChild(nodoInventario);
-
-                nodoDatos = documento.createElement("IdInventario");
-                nodoInventario.appendChild(nodoDatos);
-                texto = documento.createTextNode(inv.getIdInventario());
-                nodoDatos.appendChild(texto);
-
-                nodoDatos = documento.createElement("SlotsMaximos");
-                nodoInventario.appendChild(nodoDatos);
-                texto = documento.createTextNode(String.valueOf(inv.getSlotsMaximos()));
-                nodoDatos.appendChild(texto);
-                
-                nodoDatos = documento.createElement("SlotsOcupados");
-                nodoInventario.appendChild(nodoDatos);
-                texto = documento.createTextNode(String.valueOf(inv.getSlotsOcupados()));
-                nodoDatos.appendChild(texto);
-                
-                nodoJugadores = documento.createElement("Jugadores");
-                nodoInventario.appendChild(nodoJugadores);
-
-                for (Jugador j : inv.getJugadores()){
-                    nodoJugador = documento.createElement("IdJugador");
-                    nodoJugadores.appendChild(nodoJugador);
-                    texto = documento.createTextNode(j.getIdPlayer());
-                    nodoJugador.appendChild(texto);
-                }
-                
-            }
-
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            
-            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            
-            Source source = new DOMSource(documento);
-            Result resultado = new StreamResult(new File("inventarios_sistema.xml"));
-            
-            transformer.transform(source, resultado);
-            
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(TransformerConfigurationException tce){
-            tce.printStackTrace();
-        }
-        catch(TransformerException te){
-            te.printStackTrace();
-        }
-    }
-
-     /**
-     * @brief leer el xml de los inventarios y guardarlo en la instancia del controlador (debera de llamarse posteriormente a enlazarInventarioJugador tras la carga de los jugadores para finalizar la carga de los invcentarios)
-     * @post leera un archivo xml y guardaran sus datos
-     */
-    public void leerXML_inventario(){ 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            
-            File f = new File("inventarios_sistema.xml");
-            if (!f.exists() || f.length() == 0){
-                //No lo podemos leero o no existe o esta vacio
-            }
-            else {
-
-                documento = builder.parse(f);
-
-                // Recorrer el arbol
-                NodeList inventarios = documento.getElementsByTagName("Inventario");
-
-                for(int i = 0; i < inventarios.getLength(); i++){
-                    Node inventario = inventarios.item(i);
-                    Element elemento = (Element) inventario;
-
-                    InventarioCompartido inv = new InventarioCompartido (elemento.getElementsByTagName("IdInventario").item(0).getChildNodes().item(0).getNodeValue(), Integer.parseInt(elemento.getElementsByTagName("SlotsMaximos").item(0).getChildNodes().item(0).getNodeValue()), Integer.parseInt(elemento.getElementsByTagName("SlotsOcupados").item(0).getChildNodes().item(0).getNodeValue()));
-                    inventarios_sistema.add(inv);
-
-                    ArrayList<String> aux = new ArrayList<String>();
-                    NodeList jugadores = elemento.getElementsByTagName("IdJugador");
-                    for (int k = 0; k < jugadores.getLength(); k++) {
-
-                        Node jugadorNode = jugadores.item(k);
-
-                        aux.add((jugadorNode.getTextContent()));
-
-                    }
-                    arrayAuxiliarDeArraysCarga.add(aux);
-                
-                }
-            }
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(IOException ioe){
-            ioe.printStackTrace();
-        }
-        catch(SAXException saxe){
-            saxe.printStackTrace();
-        }
-    }
-    
-     /**
-     * @brief con un array auxiliar terminara la carga de los inventarios introduciendo sus jugadores con acceso
-     * @pre haber llamado antes a leerXML_inventario para la carga del auxiliar
-     * @pre haber cargado antes los jugadores
-     * @post se introduciran los jugadores en los inventarios
-     */
-    public void enlazarInventarioJugador (){
-        for (int i=0; i < inventarios_sistema.size(); i++){
-            for (int j=0; j<arrayAuxiliarDeArraysCarga.get(i).size(); j++){
-                inventarios_sistema.get(i).setJugadorConAcceso(getJugadorById(arrayAuxiliarDeArraysCarga.get(i).get(j)));
-            }
-        }
+    public void leerSerializable_servidor(){
         
+        ObjectInputStream deserializador = null;
+        try {
+            deserializador = new ObjectInputStream(new FileInputStream("servidores.dat"));
+            servidores_sistema = (ArrayList<Servidor>)deserializador.readObject();
+        } catch (FileNotFoundException fnfe ) {
+            fnfe.printStackTrace();
+        } catch (ClassNotFoundException cnfe ) {
+            cnfe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (deserializador != null)
+            try {
+                deserializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    /*////////////////////////////////////////////////////////
+    /////////////    Serializable_Inventario   //////////////
+    //////////////////////////////////////////////////////*/
+    
+     /**
+     * @brief escribir el serializable de los inventarios
+     * @post se escribira la instancia actual de los inventarios del controlador en un archivo .data
+     */
+    public void escribirSerializable_inventario(){
+        ObjectOutputStream serializador = null;
+        try {
+            serializador = new ObjectOutputStream(new FileOutputStream("inventarios.dat"));
+            serializador.writeObject(inventarios_sistema);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (serializador != null)
+            try {
+                serializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+     /**
+     * @brief leer el serializable de los inventarios y guardarlo en la instancia del controlador 
+     * @post leera un archivo .data y guardaran sus datos
+     */
+    public void leerSerializable_inventario(){ 
+        
+        ObjectInputStream deserializador = null;
+        try {
+            deserializador = new ObjectInputStream(new FileInputStream("inventarios.dat"));
+            inventarios_sistema = (ArrayList<InventarioCompartido>)deserializador.readObject();
+        } catch (FileNotFoundException fnfe ) {
+            fnfe.printStackTrace();
+        } catch (ClassNotFoundException cnfe ) {
+            cnfe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (deserializador != null)
+            try {
+                deserializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
     }
     
 
     /*////////////////////////////////////////////////////////
-    ///////////////////    xml_Partida    ///////////////////
+    ///////////////    Serializable_Partida  ////////////////
     //////////////////////////////////////////////////////*/
 
      /**
-     * @brief escribir el xml de las partidas
-     * @post se escribira la instancia actual de las partidas del controlador en un archivo xml
+     * @brief escribir el serializable de las partidas
+     * @post se escribira la instancia actual de las partidas del controlador en un archivo .data
      */
-    public void escribirXML_partida(){
-    
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            // Crear estructura del documento
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            DOMImplementation dom = builder.getDOMImplementation();
-            documento = dom.createDocument(null, "xml", null);
-
-            // Crear elemento raiz
-            Element raiz = documento.createElement("Partidas");
-            documento.getDocumentElement().appendChild(raiz);
-            
-            // Crear nodos para cada producto y colgarlos del arbol
-            Element nodoPartida = null;
-            Element nodoDatos = null;
-            Text texto = null;
-            
-            Element nodoJugador = null;
-            Element nodoJugadores = null;
-
-            for (Partida part : partidas_sistema){
-                nodoPartida = documento.createElement("Partida");
-                raiz.appendChild(nodoPartida);
-
-                nodoDatos = documento.createElement("IdPartida");
-                nodoPartida.appendChild(nodoDatos);
-                texto = documento.createTextNode(part.getIdPartida());
-                nodoDatos.appendChild(texto);
-
-                nodoDatos = documento.createElement("NumEspectadores");
-                nodoPartida.appendChild(nodoDatos);
-                texto = documento.createTextNode(String.valueOf(part.getNumEspectadores()));
-                nodoDatos.appendChild(texto);
-                
-                nodoDatos = documento.createElement("IdServidorPartida");
-                nodoPartida.appendChild(nodoDatos);
-                texto = documento.createTextNode(part.getServerPartida().getIdServer());
-                nodoDatos.appendChild(texto);
-                
-                nodoJugadores = documento.createElement("Jugadores");
-                nodoPartida.appendChild(nodoJugadores);
-
-                for (Jugador j : part.getJugadores()){
-                    nodoJugador = documento.createElement("IdJugador");
-                    nodoJugadores.appendChild(nodoJugador);
-                    texto = documento.createTextNode(j.getIdPlayer());
-                    nodoJugador.appendChild(texto);
-                }
-                
-
+    public void escribirSerializable_partida(){
+        
+        ObjectOutputStream serializador = null;
+        try {
+            serializador = new ObjectOutputStream(new FileOutputStream("partidas.dat"));
+            serializador.writeObject(partidas_sistema);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (serializador != null)
+            try {
+                serializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
-
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            
-            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            
-            Source source = new DOMSource(documento);
-            Result resultado = new StreamResult(new File("partidas_sistema.xml"));
-            
-            transformer.transform(source, resultado);
-            
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(TransformerConfigurationException tce){
-            tce.printStackTrace();
-        }
-        catch(TransformerException te){
-            te.printStackTrace();
         }
     }
 
      /**
-     * @brief leer el xml de las partidas y guardarlo en la instancia del controlador
-     * @pre haber cargado antes los jugadores
-     * @post leera un archivo xml y guardaran sus datos
+     * @brief leer el serializable de las partidas y guardarlo en la instancia del controlador
+     * @post leera un archivo .data y guardaran sus datos
      */
-    public void leerXML_partida(){
+    public void leerSerializable_partida(){
     
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-        Partida p;
-
-        try{
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            
-            File f = new File("partidas_sistema.xml");
-            if (!f.exists() || f.length() == 0){
-                //No lo podemos leero o no existe o esta vacio
-            }
-            else {
-                documento = builder.parse(f);
-
-                // Recorrer el arbol
-                NodeList partidas = documento.getElementsByTagName("Partida");
-
-                for(int i = 0; i < partidas.getLength(); i++){
-                    Node partida = partidas.item(i);
-                    Element elemento = (Element) partida;
-
-
-                    p = new Partida (elemento.getElementsByTagName("IdPartida").item(0).getChildNodes().item(0).getNodeValue(), Integer.parseInt(elemento.getElementsByTagName("NumEspectadores").item(0).getChildNodes().item(0).getNodeValue()), obtenerServidorId(elemento.getElementsByTagName("IdServidorPartida").item(0).getChildNodes().item(0).getNodeValue()));
-
-                    NodeList jugadores = elemento.getElementsByTagName("IdJugador");
-
-                    for (int j = 0; j < jugadores.getLength(); j++) {
-                        Node jugadorNode = jugadores.item(j);
-                        p.setUnJugador(getJugadorById(jugadorNode.getTextContent()));
-                    }
-                    partidas_sistema.add(p);
-                }
-            }
-
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(IOException ioe){
+        
+        ObjectInputStream deserializador = null;
+        try {
+            deserializador = new ObjectInputStream(new FileInputStream("partidas.dat"));
+            partidas_sistema = (ArrayList<Partida>)deserializador.readObject();
+        } catch (FileNotFoundException fnfe ) {
+            fnfe.printStackTrace();
+        } catch (ClassNotFoundException cnfe ) {
+            cnfe.printStackTrace();
+        } catch (IOException ioe) {
             ioe.printStackTrace();
-        }
-        catch(SAXException saxe){
-            saxe.printStackTrace();
+        } finally {
+            if (deserializador != null)
+            try {
+                deserializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
         }
     }
     
     /*////////////////////////////////////////////////////////
-    ///////////////////    xml_Jugador    ///////////////////
+    //////////////    Serializable_Jugador    ///////////////
     //////////////////////////////////////////////////////*/
 
      /**
-     * @brief escribir el xml de los jugadores
-     * @post se escribira la instancia actual de los jugadores del controlador en un archivo xml
+     * @brief escribir el serializable de los jugadores
+     * @post se escribira la instancia actual de los jugadores del controlador en un archivo .data
      */
-    public void escribirXML_jugador(){
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            // Crear estructura del documento
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            DOMImplementation dom = builder.getDOMImplementation();
-            documento = dom.createDocument(null, "xml", null);
-
-            // Crear elemento raiz
-            Element raiz = documento.createElement("Jugadores");
-            documento.getDocumentElement().appendChild(raiz);
-            
-            // Crear nodos para cada producto y colgarlos del arbol
-            Element nodoJugador = null;
-            Element nodoDatos = null;
-            Text texto = null;
-            
-            Element nodoInventario = null;
-            Element nodoInventarios = null;
-
-            for (Jugador jug : jugadores_sistema){
-                nodoJugador = documento.createElement("Jugador");
-                raiz.appendChild(nodoJugador);
-
-                nodoDatos = documento.createElement("IdJugador");
-                nodoJugador.appendChild(nodoDatos);
-                texto = documento.createTextNode(jug.getIdPlayer());
-                nodoDatos.appendChild(texto);
-
-                nodoDatos = documento.createElement("NickName");
-                nodoJugador.appendChild(nodoDatos);
-                texto = documento.createTextNode(jug.getNickName());
-                nodoDatos.appendChild(texto);
-                
-                nodoDatos = documento.createElement("Nivel");
-                nodoJugador.appendChild(nodoDatos);
-                texto = documento.createTextNode(String.valueOf(jug.getNivel()));
-                nodoDatos.appendChild(texto);
-                
-                nodoInventarios = documento.createElement("Inventarios");
-                nodoJugador.appendChild(nodoInventarios);
-
-                for (InventarioCompartido ic : jug.getInventarios()){
-                    nodoInventario = documento.createElement("IdInventario");
-                    nodoInventarios.appendChild(nodoInventario);
-                    texto = documento.createTextNode(ic.getIdInventario());
-                    nodoInventario.appendChild(texto);
-                }
-                
+    public void escribirSerializable_jugador(){
+        ObjectOutputStream serializador = null;
+        try {
+            serializador = new ObjectOutputStream(new FileOutputStream("jugadores.dat"));
+            serializador.writeObject(jugadores_sistema);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (serializador != null)
+            try {
+                serializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
-
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            
-            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            
-            Source source = new DOMSource(documento);
-            Result resultado = new StreamResult(new File("jugadores_sistema.xml"));
-            
-            transformer.transform(source, resultado);
-            
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(TransformerConfigurationException tce){
-            tce.printStackTrace();
-        }
-        catch(TransformerException te){
-            te.printStackTrace();
         }
     }
 
      /**
-     * @brief leer el xml de los jugadores y guardarlo en la instancia del controlador
-     * @pre haber cargado antes los inventarios (aunque sea de manera parcial)
-     * @post leera un archivo xml y guardaran sus datos
+     * @brief leer el serializable de los jugadores y guardarlo en la instancia del controlador
+     * @post leera un archivo .data y guardaran sus datos
      */
-    public void leerXML_jugador(){
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document documento = null;
-
-        try{
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            
-            
-            File f = new File("jugadores_sistema.xml");
-            if (!f.exists() || f.length() == 0){
-                //No lo podemos leero o no existe o esta vacio
-            }
-            else {
-                
-
-                documento = builder.parse(f);
-
-                // Recorrer el arbol
-                NodeList jugadores = documento.getElementsByTagName("Jugador");
-
-                for(int i = 0; i < jugadores.getLength(); i++){
-                    Node jugador = jugadores.item(i);
-                    Element elemento = (Element) jugador;
-
-                    Jugador j = new Jugador (elemento.getElementsByTagName("IdJugador").item(0).getChildNodes().item(0).getNodeValue(), elemento.getElementsByTagName("NickName").item(0).getChildNodes().item(0).getNodeValue(), Integer.parseInt(elemento.getElementsByTagName("Nivel").item(0).getChildNodes().item(0).getNodeValue()));
-                    
-                    NodeList inventarios = elemento.getElementsByTagName("IdInventario");
-
-                    for (int k = 0; k < inventarios.getLength(); k++) {
-                        Node inventarioNode = inventarios.item(k);
-                        j.setInventarioConAcceso(getInventarioById(inventarioNode.getTextContent()));
-                    }
-                    
-                    jugadores_sistema.add(j);
-                }
-
-            }
-        }
-        catch(ParserConfigurationException pce){
-            pce.printStackTrace();
-        }
-        catch(IOException ioe){
+    public void leerSerializable_jugador(){
+    
+        ObjectInputStream deserializador = null;
+        try {
+            deserializador = new ObjectInputStream(new FileInputStream("jugadores.dat"));
+            jugadores_sistema = (ArrayList<Jugador>)deserializador.readObject();
+        } catch (FileNotFoundException fnfe ) {
+            fnfe.printStackTrace();
+        } catch (ClassNotFoundException cnfe ) {
+            cnfe.printStackTrace();
+        } catch (IOException ioe) {
             ioe.printStackTrace();
-        }
-        catch(SAXException saxe){
-            saxe.printStackTrace();
+        } finally {
+            if (deserializador != null)
+            try {
+                deserializador.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
         }
     }
+    
 }

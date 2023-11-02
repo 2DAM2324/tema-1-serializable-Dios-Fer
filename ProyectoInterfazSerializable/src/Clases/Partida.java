@@ -1,13 +1,14 @@
 package Clases;
 
 import Clases.Jugador;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Fernando Ortega Castro
  */
-public class Partida {
+public class Partida implements Serializable {
     
     /********************************
      ********   Atributos   *********
@@ -95,8 +96,8 @@ public class Partida {
         this.jugadores.add(j);
     }
 
-    public void setPartidasActuales(int partidasActuales) {
-        this.PartidasActuales=partidasActuales;
+    public static void setPartidasActuales(int partidasActuales) {
+        Partida.PartidasActuales=partidasActuales;
     }
     
     /********************************

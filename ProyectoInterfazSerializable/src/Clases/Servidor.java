@@ -1,10 +1,12 @@
 package Clases;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Fernando Ortega Castro
  */
-public class Servidor {
+public class Servidor implements Serializable {
     
     /********************************
      ********   Atributos   *********

@@ -1,12 +1,13 @@
 package Clases;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Fernando Ortega Castro
  */
-public class InventarioCompartido {
+public class InventarioCompartido implements Serializable {
     
     /********************************
      ********   Atributos   *********
@@ -86,8 +87,8 @@ public class InventarioCompartido {
         this.SlotsOcupados = SlotsOcupados;
     }
     
-    public void setInventariosActuales (int InventariosActuales){
-        this.InventariosActuales=InventariosActuales;
+    public static void setInventariosActuales (int InventariosActuales){
+        InventarioCompartido.InventariosActuales=InventariosActuales;
     }
 
     /********************************
