@@ -865,7 +865,7 @@ public class Ventana1 extends javax.swing.JFrame {
 
     private void jButton_guardar_inventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_guardar_inventarioActionPerformed
         //Filtros 
-        if((!jTextField_SlotsMaximos.getText().toString().trim().equals("") && !jTextField_SlotsOcupados.getText().toString().trim().equals(""))&& (IdInventarioSeleccionado!="")){
+        if((!jTextField_SlotsMaximos.getText().toString().trim().equals("") && !jTextField_SlotsOcupados.getText().toString().trim().equals(""))&& (!IdInventarioSeleccionado.equals(""))){
 
             if (esEntero(jTextField_SlotsMaximos.getText().toString()) && esEntero(jTextField_SlotsOcupados.getText().toString())){
                 
@@ -974,7 +974,7 @@ public class Ventana1 extends javax.swing.JFrame {
 
     private void jButton_guardar_Servidor(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_guardar_Servidor
         //Filtros
-        if((!jTextField_region.getText().toString().trim().equals("")) && (IdServerSeleccionado!="")){
+        if((!jTextField_region.getText().toString().trim().equals("")) && (!IdServerSeleccionado.equals(""))){
             
             //Pasamos datos al controlador, este modifica el objeto y lo actualiza
             controller.ModificarServidor(IdServerSeleccionado, jTextField_region.getText().toString());
@@ -1102,7 +1102,7 @@ public class Ventana1 extends javax.swing.JFrame {
 
     private void jButton_guardar_partidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_guardar_partidaActionPerformed
         //Filtros
-        if(!jTextField_IdServer_Partida.getText().toString().trim().equals("") && !jTextField_NumEspectadores.getText().toString().trim().equals("")){
+        if((!jTextField_IdServer_Partida.getText().toString().trim().equals("") && !jTextField_NumEspectadores.getText().toString().trim().equals(""))&& (!IdPartidaSeleccionado.equals(""))){
             if (esEntero(jTextField_NumEspectadores.getText().toString())){
 
                 if (((Integer.parseInt(jTextField_NumEspectadores.getText().toString()))>=0)){
@@ -1295,7 +1295,7 @@ public class Ventana1 extends javax.swing.JFrame {
 
     private void jButton_guardar_jugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_guardar_jugadorActionPerformed
         //Filtros
-        if(!jTextField_NickName.getText().toString().trim().equals("") && !jTextField_Nivel.getText().toString().trim().equals("")){
+        if((!jTextField_NickName.getText().toString().trim().equals("") && !jTextField_Nivel.getText().toString().trim().equals(""))&& (!IdJugadorSeleccionado.equals(""))){
 
             if (esEntero(jTextField_Nivel.getText().toString())){
                                 
